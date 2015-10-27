@@ -163,17 +163,22 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
             if (assetCollection.assetCollectionSubtype == PHAssetCollectionSubtypeAlbumRegular) {
                 [userAlbums addObject:assetCollection];
             } else if ([assetCollectionSubtypes containsObject:@(assetCollection.assetCollectionSubtype)]) {
-                smartAlbums[@(assetCollection.assetCollectionSubtype)] = assetCollection;
+                NSMutableArray *albums = smartAlbums[@(assetCollection.assetCollectionSubtype)];
+                if (!albums) {
+                    albums = [NSMutableArray array];
+                    smartAlbums[@(assetCollection.assetCollectionSubtype)] = albums;
+                }
+                [albums addObject:assetCollection];
             }
         }];
     }
     
     // Fetch smart albums
     for (NSNumber *assetCollectionSubtype in assetCollectionSubtypes) {
-        PHAssetCollection *assetCollection = smartAlbums[assetCollectionSubtype];
+        NSArray *assetCollectionList = smartAlbums[assetCollectionSubtype];
         
-        if (assetCollection) {
-            [assetCollections addObject:assetCollection];
+        if (assetCollectionList) {
+            [assetCollections addObjectsFromArray:assetCollectionList];
         }
     }
     
